@@ -1,0 +1,288 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { Audio } from "expo-av"; // Importing Audio for audio context
+
+const moods = ['😊', '😡', '😭', '😵', '😐', '🥺', '😴', '🤔', '😄', '😞'];
+
+const affirmations: { [key: string]: string } = {
+  '😊': 'Joy is your anchor—carry it softly.',
+  '😡': 'Your anger deserves compassion too.',
+  '😭': 'Even tears are a form of healing.',
+  '😵': 'You’re allowed to pause. Breathe.',
+  '😐': 'Stillness holds insight. You are whole.',
+  '🥺': 'Your sensitivity is a gift, not a weakness.',
+  '😴': 'Rest is resistance. Rest is medicine.',
+  '🤔': 'Thinking deeply is your superpower.',
+  '😄': 'Let your smile ripple outward.',
+  '😞': 'Down days do not define you—they refine you.',
+};
+
+const journalPrompts: { [key: string]: string } = {
+  '😊': 'What brought you joy today?',
+  '😡': 'What’s sitting beneath the surface of your frustration?',
+  '😭': 'If your tears could speak, what would they say?',
+  '😵': 'Where in your body do you feel this overwhelm?',
+  '😐': 'What does emotional neutrality mean to you right now?',
+  '🥺': 'What would you tell your younger self today?',
+  '😴': 'Describe the space that helps you feel most restful.',
+  '🤔': 'What question are you currently sitting with?',
+  '😄': 'Who shares in your happiness today?',
+  '😞': 'Name one thing you survived this week.',
+};
+
+const empowermentQuotes = [
+  '“Empathy is quiet power.”',
+  '“Naming your feeling is leadership.”',
+  '“Gentleness sparks collective healing.”',
+  '“Every mood is wisdom in disguise.”',
+  '“Your reflection can inspire someone else.”',
+  '“Vulnerability is a form of courage.”',
+  '“Empowered individuals uplift communities.”',
+  '“Your mood is valid—even when society is loud.”',
+];
+
+type MoodScreenProps = {
+  route: RouteProp<{ params: { mood: string } }, 'params'>;
+};
+
+const MoodScreen: React.FC<MoodScreenProps> = ({ route }) => {
+  const navigation = useNavigation();
+  const initialMood = route.params.mood;
+  const [selectedMood, setSelectedMood] = useState<string>(initialMood);
+  const [affirmation, setAffirmation] = useState<string>(affirmations[initialMood]);
+  const [journalPrompt, setJournalPrompt] = useState<string>(journalPrompts[initialMood]);
+
+  useEffect(() => {
+    setAffirmation(affirmations[selectedMood]);
+    setJournalPrompt(journalPrompts[selectedMood]);
+  }, [selectedMood]);
+return (
+  <View style={styles.screen}>
+    <ScrollView contentContainerStyle={styles.container}>
+       {/* 🔙 Back to Home */}
+          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+
+      {/* 💜 Header */}
+      <View style={styles.headerBox}>
+        <Text style={styles.title}>You’re feeling:</Text>
+        <Text style={styles.mood}>{selectedMood}</Text>
+        <Text style={styles.affirmation}>{affirmation}</Text>
+        <Text style={styles.loggedMood}>🕰️ Mood Logged Previously: {initialMood}</Text>
+      </View>
+
+      {/* 📝 Journal Prompt & Invite */}
+      <View style={styles.transparentBox}>
+        <Text style={styles.promptTitle}>Journal Prompt</Text>
+        <Text style={styles.journalPrompt}>{journalPrompt}</Text>
+        <Text style={styles.invite}>Would you like to write about how you're feeling?</Text>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={styles.choiceButton}
+            onPress={() => navigation.navigate('Journaling', { prompt: journalPrompt })}
+          >
+            <Text style={styles.choiceText}>Yes ✍🏾</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.choiceButton}
+            onPress={() => navigation.navigate('Home')}
+          >
+            <Text style={styles.choiceText}>Not now 🙏🏾</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* 🎭 Mood Switcher */}
+      <View style={styles.transparentBox}>
+        <Text style={styles.switchLabel}>Switch moods:</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.moodScroll}>
+          {moods.map((mood) => (
+            <TouchableOpacity key={mood} onPress={() => setSelectedMood(mood)}>
+              <Text style={[
+                styles.moodIcon,
+                selectedMood === mood && styles.moodSelected
+              ]}>
+                {mood}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* 🌟 Empowerment Quotes */}
+      <View style={styles.transparentBox}>
+        <Text style={styles.quoteLabel}>🌟 Empowerment Quotes</Text>
+        <Text style={styles.quoteSubtext}>Generated by AI to inspire growth & connection</Text>
+        <FlatList
+          data={empowermentQuotes}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.quoteBox}>
+              <Text style={styles.quote}>{item}</Text>
+            </View>
+          )}
+        />
+      </View>
+
+      <Text style={styles.footer}>Empowered individuals empower society. 💫</Text>
+    </ScrollView>
+  </View>
+  );
+};
+
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 60,
+    paddingBottom: 50,
+    alignItems: 'center',
+    backgroundColor: '#2e004f',
+  },
+  headerBox: {
+    backgroundColor: '#24003d',
+    borderRadius: 20,
+    padding: 18,
+    width: '90%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  title: { fontSize: 20, color: '#fff', marginBottom: 4 },
+  mood: { fontSize: 52, marginBottom: 8 },
+  affirmation: {
+    fontSize: 15,
+    color: '#E5C7FF',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  backText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  loggedMood: {
+    fontSize: 13,
+    color: '#ccc',
+    fontStyle: 'italic',
+    marginTop: 6,
+  },
+   backButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+    padding: 6,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 8,
+  },
+  transparentBox: {
+    backgroundColor: '#ffffff10',
+    padding: 14,
+    borderRadius: 20,
+    width: '90%',
+    marginBottom: 20,
+  },
+  promptTitle: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '600',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  journalPrompt: {
+    fontSize: 15,
+    color: '#ccc',
+    fontStyle: 'italic',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  invite: {
+    fontSize: 14,
+    color: '#E5C7FF',
+    fontStyle: 'italic',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 14,
+  },
+  choiceButton: {
+    backgroundColor: '#a74eff',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 28,
+  },
+  choiceText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  switchLabel: {
+    fontSize: 14,
+    color: '#ccc',
+    fontStyle: 'italic',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  moodScroll: { marginBottom: 4 },
+  moodIcon: {
+    fontSize: 30,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    marginHorizontal: 5,
+    borderRadius: 24,
+    backgroundColor: '#400070',
+    color: '#fff',
+  },
+  moodSelected: {
+    backgroundColor: '#a74eff',
+  },
+  quoteLabel: {
+    fontSize: 15,
+    color: '#fff',
+    fontWeight: '600',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  quoteSubtext: {
+    fontSize: 12,
+    color: '#ccc',
+    fontStyle: 'italic',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+   quoteBox: {
+    backgroundColor: '#ffffff15',
+    paddingVertical: 40,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    marginRight: 10,
+    maxWidth: 220,
+  },
+  quote: {
+    fontSize: 13,
+    color: '#E5C7FF',
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  footer: {
+    fontSize: 14,
+    color: '#bbb',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: 30,
+    paddingHorizontal: 20,
+  },
+});
+ export default MoodScreen;

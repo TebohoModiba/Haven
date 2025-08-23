@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "splash": {
+      "image": "./asserts/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#efe3ff"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c10e483d-0397-4752-9fbd-6a53ca0ec6cd"
+      }
+    },
+    "android": {
+      "package": "com.tebza5533.havenapp"
+    },
+    "plugins": [
+      "expo-audio"
+    ]
+  }
+}
