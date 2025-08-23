@@ -1,8 +1,4 @@
-Perfect 👍 — here’s a **professional README template** for your hackathon project. You can copy this into your repo and adjust where needed:
-
----
-
-# HavenAI (Hackathon Project)
+HavenAI (Hackathon Project)
 
 I created this app with my classmate and teammate, **Rumbidzai Maburutse** for the Hackathon hosted by our university.
 The theme of the hackathon was **“AI to Empower Society.”**
