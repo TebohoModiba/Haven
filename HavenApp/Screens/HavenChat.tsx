@@ -78,7 +78,7 @@ const ChatWithHavenScreen: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer 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',
+          Authorization: //Removed API Key due to security risk.,
         },
         body: JSON.stringify({
           model: 'llama3-70b-8192',
